@@ -8,7 +8,7 @@ class HtmlInterface extends React.Component {
 <div className="App" >
                 <div id="quote-box">
                     <div id="text">{this.props.quote}</div>
-                    <div id="author">{this.props.author}</div>
+                    <div id="author"><p>{this.props.author}</p></div>
                     <div id="buttons-container">
                         <div id="new-quote" onClick={this.props.getNewQuote}>New quote</div>
                         <div>

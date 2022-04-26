@@ -4,75 +4,80 @@ import { BeforeData } from './BeforeData';
 import { HtmlInterface } from './HtmlInterface';
 
 // values for axios to get data from API
-const url = 'https://api.paperquotes.com/quotes/?tags= smiling,happiness,life,smile&language=en&limit=500';
-const token = '1f4a67eec9e663b663ea72963d0abdaf71876348';
+const URL = 'https://api.paperquotes.com/quotes/?tags= smiling,happiness,life,smile&language=en&limit=500';
+const TOKEN = '1f4a67eec9e663b663ea72963d0abdaf71876348';
+const TWEETURL = 'https://twitter.com/intent/tweet';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       quotes: [],
-      quoteId: null,
+      quote: '',
+      author: '',
       dataReady: false,
-
     };
-    this.getRandomId = this.getRandomId.bind(this);
     this.getNewQuote = this.getNewQuote.bind(this);
-
   }
   // get data from API
   componentDidMount() {
-    const id = this.getRandomId();
-    axios.get(url, {
+    axios.get(URL, {
       headers: {
-        'Authorization': `Token ${token}`
+        'Authorization': `Token ${TOKEN}`
       }
     })
       .then(res => {
-        this.setState({
-          quotes: res.data.results,
-          quoteId: id,
-          dataReady: true,
-        });
+        this.setQuotesInState(res.data.results);
       })
       .catch(error => {
         console.error(error)
       });
   }
 
-  // get next quote with random id
+  setQuotesInState(quotes) {
+    this.setState({
+      quotes: quotes
+    }, () => {
+      this.getNewQuote();
+    });
+  }
+
+  // get next quote with random id and set it to state
   getNewQuote() {
-    this.setState(
-      { quoteId: this.getRandomId() }
-    );
+    const id = this.getRandomId();
+    const quote = this.removeAuthorFromQuote(this.state.quotes[id].quote);
+    const author = this.state.quotes[id].author
+    this.setState({
+      quote: quote,
+      author: author,
+      dataReady: true
+    });
   }
 
-  // generate rando id for next quote
+  // generate random id for next quote
   getRandomId() {
-    return Math.floor(Math.random() * 500);
+    return Math.floor(Math.random() * 500 + 1);
   }
 
+  // in this API sometimes in quote string appears author after dot. This is to remove it.
   removeAuthorFromQuote(quote) {
     return quote.split('.')[0] + '.';
   }
 
+  // this makes it a bit shorter
+  getTweeterLink() {
+    return TWEETURL + `?via=umykanin&text="${this.state.quote}"%0a${this.state.author}%0a&hashtags=famousQuotes`;
+  }
+
   render() {
-    if (this.state.dataReady === true) {
-      let id = this.state.quoteId;
-      const quote = this.state.quotes[id].quote;
-      const author = this.state.quotes[id].author;
-      // some quotes have author after the text
-      const quoteRes = this.removeAuthorFromQuote(quote);
-      let displayQuote = <p>"{quoteRes}"</p>;
-      let displayAuthor = <p>{author}</p>;
-      let twitterIntentLink = `https://twitter.com/intent/tweet?via=umykanin&text="${quoteRes}"%0a${author}%0a&hashtags=famousQuotes`;
+    if (this.state.dataReady) {
       return (
-        <HtmlInterface 
-          quote={displayQuote}
-          autor={displayAuthor}
+        <HtmlInterface
+          quote={<p>"{this.state.quote}"</p>}
+          author={this.state.author}
           getNewQuote={this.getNewQuote}
-          twitterIntentLink={twitterIntentLink}
-          target={"_blank"}/>
+          twitterIntentLink={this.getTweeterLink()}
+          target={"_blank"} />
       );
     } else return (
       <BeforeData />

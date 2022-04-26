@@ -7,7 +7,7 @@ class BeforeData extends React.Component {
         return (
             <HtmlInterface
                 quote={<Spinner />}
-                author={<p>...</p>}
+                author="..."
             />
         );
     }
