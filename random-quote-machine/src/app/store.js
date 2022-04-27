@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+/*
 const reducer = (state, action) => {
   switch (action.type) {
     case 'CREATE_QUOTES': return {
@@ -11,10 +12,10 @@ const reducer = (state, action) => {
   }
 }
 
-const actionAxios = 
+
 
 export const store = configureStore({
   reducer: reducer,
   quotes: []
 });
-
+*/
